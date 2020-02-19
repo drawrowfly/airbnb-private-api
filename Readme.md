@@ -10,6 +10,7 @@
 ## Features
 *   Manage listings
 *   Manage calendar
+*   Manage reservations
 *   Manage own profile
 *   Manage conversations
 *   Other things related to AirBnb
