@@ -19,7 +19,8 @@
 - [Installation](#installation)
 - [Usage](#usage)
 	- [Import Library](#import-library)
-	- [_authentication()](#_authentication)
+	- [Authorization By Email](#authorization-by-email)
+	- [Authorization By Phone](#authorization-by-phone)
 	- [_load_session()](#_load_session)
 	- [Profile](#profile)
 	    - [_get_my_profile()](#_get_my_profile)
@@ -71,7 +72,7 @@ const { AirBnbClient } = require('airbnb-private-api');
 ```
 #### Authorization By Email
 ##### _authentication_by_email
- - **You only need to do this step once**
+ - **You only need to do this once**
  - Authorization by using **email** and **password**
  - New device credentials will be generated
  - To make it convenient the login token and device details will be saved to a file {session_path}/{email}.json for the future usage
@@ -93,11 +94,11 @@ let airbnb = new AirBnbClient({
 
 #### Authorization By Phone
 ##### _authentication_by_phone
- - **This is best way to authorize to the AirBnb. In that case chances of hitting to a checkpoint are drastically lower**
- - **You only need to do this step once**
+ - **This is the best way to authorize to the AirBnb. In that case chances of hitting to a checkpoint are drastically lower**
+ - **You only need to do it once**
  - Authorization by using **phone**
  - New device credentials will be generated
- - To make it convenient the login token and device details will be saved to a file {session_path}/{phone}.json for the future usage
+ - To make it convenient the login token and device details will be saved to a file {session_path}/{email}.json for the future usage
 ```javascript  
 let airbnb = new AirBnbClient({
     email: '18009009899',
@@ -105,10 +106,10 @@ let airbnb = new AirBnbClient({
 });
 (async() => {
     try {
-        // First you need to send request to receive a SMS code
+        // First you need to send request to receive a code as a SMS
         await airbnb._send_auth_code_to_phone();
 
-        // After receiving the code you need to submit it in order to receive login credentials
+        // After receiving code you need to submit it in order to receive login credentials
         let response = await airbnb._authentication_by_phone(SMS_CODE);
         console.log('Login Details: ', response);
     } catch (error) {
@@ -428,11 +429,11 @@ let airbnb = new AirBnbClient({
     session_path: '/user/bob/Downloads',
 });
 
-// If we do not have an active session then we need to call _authentication_by_email() or _authentication_by_phone() method
+// If we do not have an active session then we need to call _authentication() method
 // If authorization was succesfull(no errors) then Do Not Use this method anymore in the future
 (async() => {
     try {
-        await airbnb._authentication_by_email();
+        await airbnb._authentication();
         let my_listings = await airbnb._get_listings({});
         console.log("My Listings: ", my_listings)
     } catch (error) {
