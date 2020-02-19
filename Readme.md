@@ -94,7 +94,7 @@ let airbnb = new AirBnbClient({
 
 #### Authorization By Phone
 ##### _authentication_by_phone
- - **This is the best way to authorize to the AirBnb. In that case chances of hitting to a checkpoint are drastically lower**
+ - **This is the best way to authorize to the AirBnb. In that case chances of hitting to the checkpoint are drastically lower**
  - **You only need to do it once**
  - Authorization by using **phone**
  - New device credentials will be generated
@@ -429,11 +429,11 @@ let airbnb = new AirBnbClient({
     session_path: '/user/bob/Downloads',
 });
 
-// If we do not have an active session then we need to call _authentication() method
+// If we do not have an active session then we need to call _authentication_by_email() or _authentication_by_phone() method
 // If authorization was succesfull(no errors) then Do Not Use this method anymore in the future
 (async() => {
     try {
-        await airbnb._authentication();
+        await airbnb._authentication_by_email();
         let my_listings = await airbnb._get_listings({});
         console.log("My Listings: ", my_listings)
     } catch (error) {
