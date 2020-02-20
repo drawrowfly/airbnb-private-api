@@ -16,6 +16,12 @@
 *   Other things related to AirBnb
 *   **Everything is returned in JSON format**
 
+## TO DO
+*   Improve documentation
+*   Support more endpoints
+*   Store session in redis(currently in json file)
+*   Add tests
+
 ## Content
 - [Installation](#installation)
 - [Usage](#usage)
@@ -35,8 +41,7 @@
         - [_update_calendar_note()](#_update_calendar_note)
         - [_update_calendar_smart_pricing()](#_update_calendar_smart_pricing)
 	- [Messages](#messages)
-	    - [_guest_message_sync()](#_guest_message_sync)
-        - [_host_message_sync()](#_host_message_sync)
+	    - [_messaging_syncs()](#_messaging_syncs)
         - [_get_threads_ids()](#_get_threads_ids)
         - [_get_thread_by_id()](#_get_thread_by_id)
         - [_get_threads_full()](#_get_threads_full)
@@ -45,10 +50,6 @@
         - [_get_reservation_details()](#_get_reservation_details)
 - [Examples](#examples)
 - [Options](#options)
-
-**Note:**
-*   Soon i will add more endpoints to this API.
-*   Wrapper does not support checkpoints for now.
 
 **Possible errors**
 *   If there will be let me know
@@ -73,10 +74,10 @@ const { AirBnbClient } = require('airbnb-private-api');
 ```
 #### Authorization By Email
 ##### _authentication_by_email
- - **You only need to do this once**
+ - **If the request was successful then you don't need to execute this method anymore. All required AUTH data will be saved to a JSON file**
  - Authorization by using **email** and **password**
  - New device credentials will be generated
- - To make it convenient the login token and device details will be saved to a file {session_path}/{email}.json for the future usage
+ - To make it convenient the login token and the device details will be saved to a file {session_path}/{email}.json for the future usage
 ```javascript  
 let airbnb = new AirBnbClient({
     email: 'email@example.com',
@@ -86,7 +87,7 @@ let airbnb = new AirBnbClient({
 (async() => {
     try {
         let response = await airbnb._authentication_by_email();
-        console.log('Login Details: ', response);
+        console.log('Login details: ', response);
     } catch (error) {
         console.log('Error: ', error);
     }
@@ -95,24 +96,24 @@ let airbnb = new AirBnbClient({
 
 #### Authorization By Phone
 ##### _authentication_by_phone
- - **This is the best way to authorize to the AirBnb. In that case chances of hitting to the checkpoint are drastically lower**
- - **You only need to do it once**
+ - **This is the best way to authorize to the AirBnb. In that case chances of receiving checkpoint are drastically lower**
+ - **If the request was successful then you don't need to execute this method anymore. All required AUTH data will be saved to a JSON file**
  - Authorization by using **phone**
  - New device credentials will be generated
- - To make it convenient the login token and device details will be saved to a file {session_path}/{email}.json for the future usage
+ - To make it convenient the login token and the device details will be saved to a file {session_path}/{email}.json for the future usage
 ```javascript  
 let airbnb = new AirBnbClient({
-    email: '18009009899',
+    phone: '18009009899',
     session_path: '/user/bob/Downloads',
 });
 (async() => {
     try {
-        // First you need to send request to receive a code as a SMS
+        // First you need to send request to receive an SMS code
         await airbnb._send_auth_code_to_phone();
 
-        // After receiving code you need to submit it in order to receive login credentials
+        // After receiving the code you need to submit it in order to receive the login credentials
         let response = await airbnb._authentication_by_phone(SMS_CODE);
-        console.log('Login Details: ', response);
+        console.log('Login details: ', response);
     } catch (error) {
         console.log('Error: ', error);
     }
@@ -121,7 +122,7 @@ let airbnb = new AirBnbClient({
 
 #### _load_session
  - Before calling any other method, we need to load an active session
- - Method **_load_session()** will load device credentials and auth token from a file **{session_path}/{email}.json**
+ - Method **_load_session()** will load the device credentials and auth token from the a **{session_path}/{email}.json**
 ```javascript  
 (async() => {
     try {
@@ -133,12 +134,12 @@ let airbnb = new AirBnbClient({
 ```
 #### Profile
 ##### _get_my_profile
- - Method returns all your profile information
+ - Method is returning all your profile information
 ```javascript  
 (async() => {
     try {
         let response await airbnb._get_my_profile();
-        console.log('My Profile Information: ', response)
+        console.log('My profile information: ', response)
     } catch (error) {
         console.log('Error: ', error);
     }
@@ -146,13 +147,13 @@ let airbnb = new AirBnbClient({
 ```
 
 ##### _get_user_profile
- - Method returns public user details
+ - Method is returning public user details
  - **USER_ID** - positive number(>0)
 ```javascript  
 (async() => {
     try {  
         let response = await airbnb._get_user_profile(USER_ID);
-        console.log('User Information: ', response)
+        console.log('User information: ', response)
     } catch (error) {
         console.log('Error: ', error);
     }
@@ -160,7 +161,7 @@ let airbnb = new AirBnbClient({
 ```
 
 ##### _get_wishlists
- - Method returns items that are located in the Saved section of your profile
+ - Method is returning items that are located in the Saved section of your profile
  - Method is accepting an object with **_limit** and **_offset** values
  - **_limit** - limit of items to display. **Defaut value: 10**
  - **_offset** - number of items to skip. **Default value: 0**
@@ -176,7 +177,7 @@ let airbnb = new AirBnbClient({
 ```
 #### Listing
 ##### _get_listings
- - Method returns a list of your listed properties
+ - Method is returning a list of your listed properties
  - Method is accepting an object with **id** and **_limit** values
  - **id** - listing id. If not specified then method will return **_limit** number of listings. **Defaut value: 0**
  - **_limit** - number of listings to return. **Default value: 10**
@@ -184,7 +185,7 @@ let airbnb = new AirBnbClient({
 (async() => {
     try {  
         let response = await airbnb._get_listings({ _limit: 20 });
-        console.log('My Listings: ', response)
+        console.log('My listings: ', response)
     } catch (error) {
         console.log('Error: ', error);
     }
@@ -194,7 +195,7 @@ let airbnb = new AirBnbClient({
 ### Calendar
 ##### _update_calendar_price
  - Method is updating the price on the **listing_id** on the specified **dates**
- - Method is accepting an object with **listing_id** , **daily_price** and **dates**
+ - Method is accepting an object with the **listing_id** , **daily_price** and **dates**
  - **listing_id**: **number** -  listing id
  - **daily_price**: **number** -  new price
  - **dates**: Array[ISO_DATE] - array of ISO dates. Date should be in ISO format. For example **['2020-02-18', '2020-02-19', '2020-02-28']**
@@ -215,7 +216,7 @@ let airbnb = new AirBnbClient({
 
 ##### _update_calendar_availability
  - Method is updating availablity for the **listing_id**
- - Method is accepting an object with **listing_id** , **availability** and **dates**
+ - Method is accepting an object with the **listing_id** , **availability** and **dates**
  - **listing_id**: **number** -  listing id
  - **availability**: **boolean** -  **true** available, **false** not available 
  - **dates**: Array[ISO_DATE] - array of iso dates. Date should be in ISO format. For example **['2020-02-18', '2020-02-19', '2020-02-28']**
@@ -236,7 +237,7 @@ let airbnb = new AirBnbClient({
 
 ##### _update_calendar_note
  - Method is updating note on the **listing_id** for the specified **dates**
- - Method is accepting an object with **listing_id** , **notes** and **dates**
+ - Method is accepting an object with the **listing_id** , **notes** and **dates**
  - **listing_id**: **number** -  listing id
  - **notes**: **string** -  any string
  - **dates**: Array[ISO_DATE] - array of iso dates. Date should be in ISO format. For example **['2020-02-18', '2020-02-19', '2020-02-28']**
@@ -278,12 +279,23 @@ let airbnb = new AirBnbClient({
 
 
 #### Messages
-##### _guest_message_sync
- - Method will return brand new messages in your **guest** profile
+##### _messaging_syncs
+ - Method will synchronize latest messages from your profile
+ - Method is accepting an object:
+ ```javascript
+ {
+    //Profile type 'guest', 'host', 'experience_host' or 'guest_and_host': {string default: 'host'}
+    type, 
+    //Number of items to return: {number default: 10}
+    _limit, 
+ }
+ ```
+ - If someone will send you a message then you can retrieve details of the message(thread) by calling this method.
+ Airbnb App is calling this method once in a while to sync all new messages with the App.
 ```javascript  
 (async() => {
     try {  
-        let response = await airbnb._guest_message_sync();
+        let response = await airbnb._messaging_syncs({ type:'guest_and_host' });
         console.log('Result: ', response)
     } catch (error) {
         console.log('Error: ', error);
@@ -291,22 +303,10 @@ let airbnb = new AirBnbClient({
 })()
 ```
 
-##### _host_message_sync
- - Method will return brand new messages in your **host** profile
-```javascript  
-(async() => {
-    try {  
-        let response = await airbnb._host_message_sync();
-        console.log('Result: ', response)
-    } catch (error) {
-        console.log('Error: ', error);
-    }
-})()
-```
 
 ##### _get_threads_ids
  - Method will return thread id's
- - Method is accepting an object with **_limit** , **_offset** and **type**
+ - Method is accepting an object with the **_limit** , **_offset** and **type**
  - **_limit**: **number** -  number of items to return: **Default 10**
  - **_offset**: **number** -  number of items to skip: **Default 0**
  - **type**: **string** - inbox type. Can be 'guest', 'host', 'experience_host' or 'guest_and_host'. **Default 'host'**
@@ -323,11 +323,18 @@ let airbnb = new AirBnbClient({
 
 ##### _get_thread_by_id
  - Method will return conversations from a specific thread id(conversation id)
+ - Method is accepting an object:
+```javascript
+{
+    //Thread id: {number default: null}
+    id, 
+}
+```
 ```javascript  
 (async() => {
     try {  
-        let response = await airbnb._host_message_sync();
-        console.log('Result: ', response)
+        let response = await airbnb._get_thread_by_id({ id: 1212 });
+        console.log('Conversation details: ', response)
     } catch (error) {
         console.log('Error: ', error);
     }
@@ -337,7 +344,7 @@ let airbnb = new AirBnbClient({
 ##### _get_threads_full
  - The more threads you request the longer request will execute
  - Method will return full thread(conversation) data for the last **_limit** threads
- - Method is accepting an object with **_limit** , **_offset** and **type**
+ - Method is accepting an object with the **_limit** , **_offset** and **type**
  - **_limit**: **number** -  number of items to return: **Default 10**
  - **_offset**: **number** -  number of items to skip: **Default 0**
  - **type**: **string** - inbox type. Can be 'guest', 'host', 'experience_host' or 'guest_and_host'. **Default 'host'**
@@ -345,7 +352,7 @@ let airbnb = new AirBnbClient({
 (async() => {
     try {  
         let response = await airbnb._get_threads_full({ type:'guest', _limit: 5});
-        console.log('List of thread ids: ', response)
+        console.log('Threads: ', response)
     } catch (error) {
         console.log('Error: ', error);
     }
@@ -354,7 +361,7 @@ let airbnb = new AirBnbClient({
 
 #### Reservations
 ##### _get_reservations
- - Method will return **_limit** number of reservations
+ - Method will return a (**_limit** ) number of reservations
  - Method is accepting an object:
  ```javascript
  {
@@ -398,7 +405,7 @@ let airbnb = new AirBnbClient({
             order_by: 'nights',
             end_date: '2020-04-17'
         });
-        console.log('Result: ', response)
+        console.log('Reservation list: ', response)
     } catch (error) {
         console.log('Error: ', error);
     }
@@ -408,12 +415,11 @@ let airbnb = new AirBnbClient({
 ##### _get_reservation_details
  - Method will return details from the specified **RESERVATION_ID**
  - **RESERVATION_ID** - string
- ```
-```javascript  
+ ```javascript  
 (async() => {
     try {  
         let response = await airbnb._get_reservation_details(RESERVATION_ID);
-        console.log('List of thread ids: ', response)
+        console.log('Reservation details: ', response)
     } catch (error) {
         console.log('Error: ', error);
     }
@@ -436,7 +442,7 @@ let airbnb = new AirBnbClient({
     try {
         await airbnb._authentication_by_email();
         let my_listings = await airbnb._get_listings({});
-        console.log("My Listings: ", my_listings)
+        console.log("My listings: ", my_listings)
     } catch (error) {
         console.log('Error: ', error);
     }
@@ -447,7 +453,7 @@ let airbnb = new AirBnbClient({
     try {
         await airbnb._load_session();
         let my_listings = await airbnb._get_listings({});
-        console.log("My Listings: ", my_listings)
+        console.log("My listings: ", my_listings)
     } catch (error) {
         console.log('Error: ', error);
     }

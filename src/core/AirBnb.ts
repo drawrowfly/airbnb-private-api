@@ -99,7 +99,7 @@ export class AirBnbClient extends SessionManager {
                 ...(this._proxy ? { proxy: `https://${this._proxy}/` } : {}),
             };
 
-            //console.log(query);
+            console.log(query);
             try {
                 let response: Response = await rp(query);
                 resolve(response);
@@ -333,32 +333,11 @@ export class AirBnbClient extends SessionManager {
      * Guest and Host message sync
      */
     @require_auth
-    public _guest_message_sync(_limit: number = 10) {
+    public _messaging_syncs({ type = 'host', _limit = 10 }) {
         return new Promise(async (resolve, reject) => {
-            try {
-                let response = this._messaging_syncs('guest', _limit);
-                resolve(response);
-            } catch (error) {
-                reject(error);
+            if (!validate_user_type(type)) {
+                return reject({ type: 'Function', method: '_messaging_syncs', error_message: `type can only be: ${user_types}` });
             }
-        });
-    }
-
-    @require_auth
-    public _host_message_sync(_limit: number = 10) {
-        return new Promise(async (resolve, reject) => {
-            try {
-                let response = this._messaging_syncs('host', _limit);
-                resolve(response);
-            } catch (error) {
-                reject(error);
-            }
-        });
-    }
-
-    @require_auth
-    public _messaging_syncs(selected_inbox_type: string, _limit: number) {
-        return new Promise(async (resolve, reject) => {
             let query: MainRequest = {
                 uri: endpoints.messaging_syncs,
                 method: 'GET',
@@ -370,7 +349,7 @@ export class AirBnbClient extends SessionManager {
                     include_plus_onboarding_threads: true,
                     include_restaurant_threads: true,
                     include_support_messaging_threads: true,
-                    selected_inbox_type,
+                    selected_inbox_type: type,
                     sequence_id: (Date.now() / 1000) | 0,
                 },
                 apply_auth_qs: true,
@@ -380,7 +359,7 @@ export class AirBnbClient extends SessionManager {
                 let response: Response = await this._request(query);
                 resolve(response.body);
             } catch (error) {
-                resolve(error);
+                reject(error);
             }
         });
     }
@@ -392,7 +371,7 @@ export class AirBnbClient extends SessionManager {
     public _get_threads_full({ _limit = 10, type = 'host' }) {
         return new Promise(async (resolve, reject) => {
             if (!validate_user_type(type)) {
-                return reject({ type: 'Function', method: '_get_threads_full', error_message: 'type can only be guest or host' });
+                return reject({ type: 'Function', method: '_get_threads_full', error_message: `type can only be: ${user_types}` });
             }
             try {
                 let response = this._threads({
