@@ -1,12 +1,13 @@
-export function require_auth(target: Object, key: string, descriptor) {
+export function requireAuth(target: object, key: string, descriptor: any) {
     const original = descriptor.value;
     if (typeof original === 'function') {
         descriptor.value = function(...args: any[]) {
-            if (this._authenticated) {
+            if (this.authenticated) {
                 return original.apply(this, args);
             } else {
-                console.log('\x1b[36m%s\x1b[0m', `Method ${original.name} requires authentication. If you have not authorized before then you need to call _authentication() method. If you already did authorization then call _load_session() method.`);
-                return null;
+                throw new Error(
+                    `Method ${original.name} requires authentication. If you have not authorized before then you need to call _authentication() method. If you already did authorization then call _load_session() method.`,
+                );
             }
         };
     } else {
@@ -14,15 +15,38 @@ export function require_auth(target: Object, key: string, descriptor) {
     }
 }
 
-export function require_args(num: number) {
-    return function decorator(target: Object, key: string, descriptor) {
+export function requiredArguments(requiredArgs: string[]) {
+    return function decorator(target: object, key: string, descriptor: any) {
         const original = descriptor.value;
         if (typeof original === 'function') {
+            const missingArguments: string[] = [];
+            let missingOrArguments: string[] = [];
             descriptor.value = function(...args: any[]) {
-                if (args.length < num) {
-                    console.log('\x1b[36m%s\x1b[0m', `Method ${original.name} requires ${num} arguments and you passed ${args.length}`);
-                    return null;
+                for (const arg of requiredArgs) {
+                    let orArgs: string[] = [];
+                    if (arg.indexOf('|') > -1) {
+                        orArgs = arg.split('|');
+                        for (const orArg of orArgs) {
+                            if (!this[orArg]) {
+                                missingOrArguments.push(orArg);
+                            } else {
+                                missingOrArguments = [];
+                                break;
+                            }
+                        }
+                    } else {
+                        if (!this[arg]) {
+                            missingArguments.push(arg);
+                        }
+                    }
                 }
+                if (missingOrArguments.length) {
+                    throw new Error(`Method ${original.name} is missing required arguments: ${missingOrArguments.join(' or ')}`);
+                }
+                if (missingArguments.length) {
+                    throw new Error(`Method ${original.name} is missing required arguments: ${missingArguments}`);
+                }
+
                 return original.apply(this, args);
             };
         } else {

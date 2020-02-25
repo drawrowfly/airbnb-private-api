@@ -1,16 +1,17 @@
 export interface Endpoints {
     authentications: string;
     messaging_syncs: string;
-    threads: Function;
+    threads: (id: number) => string;
     accounts_me: string;
-    user_by_id: Function;
+    user_by_id: (id: number) => string;
     wishlists: string;
-    listings: Function;
+    listings: (id: number) => string;
     host_pricing_calculators: string;
     calendar_operations: string;
     reservations: string;
-    homes_booking_details: Function;
+    homes_booking_details: (id: string) => string;
     phone_one_time_passwords: string;
+    explore_tabs: string;
 }
 
 export interface UserAgents {

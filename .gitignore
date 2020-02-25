@@ -3,5 +3,8 @@ lib
 session
 test.ts
 test.js
+a1.ts
+a2.ts
+a2.js
 .npmignore
 .DS_Store

@@ -33,6 +33,8 @@
 	    - [_get_my_profile()](#_get_my_profile)
         - [_get_user_profile()](#_get_user_profile)
         - [_get_wishlists()](#_get_wishlists)
+	- [Search](#search)
+	    - [_get_listings_from_search()](#_get_listings_from_search)
 	- [Listing](#listing)
 	    - [_get_listings()](#_get_listings)
 	- [Calendar](#calendar)
@@ -108,10 +110,10 @@ let airbnb = new AirBnbClient({
 });
 (async() => {
     try {
-        // First you need to send request to receive an SMS code
+        // First you need to send request to receive the SMS code
         await airbnb._send_auth_code_to_phone();
 
-        // After receiving the code you need to submit it in order to receive the login credentials
+        // After receiving the SMS code you need to submit it in order to receive the login credentials
         let response = await airbnb._authentication_by_phone(SMS_CODE);
         console.log('Login details: ', response);
     } catch (error) {
@@ -174,6 +176,109 @@ let airbnb = new AirBnbClient({
         console.log('Error: ', error);
     }
 })()
+```
+#### Search
+##### _get_listings_from_search
+ - Method will return ARRAY of home listings from a search result
+ - Method is accepting an object:
+ ```javascript
+ {
+    // Number of items to return: {number default: 30}
+    _limit, 
+    
+    // Number of items to skip: {number default: 0}
+    _offset,
+    
+    // Number of adults: {number default: 0}
+    adults,
+    
+    // Number of children: {number default: 0}
+    children,
+    
+    // Number of infants: {number default: 0}
+    infants,
+    
+    // ISO Check In date. For example: '2020-02-17': {string default: ''}
+    checkin, 
+
+    // ISO Check Out date. For example: '2020-02-20': {string default: ''}
+    checkout, 
+
+    // Search query. For example: Boston, MA, USA : {string default: ''}
+    query, 
+
+    // Array of amenities ID's: {array default: number[]}
+    // Some of the ID's that i figured out
+    // 30 - Heating
+    // 44 - Hangers
+    // 4 - WiFi
+    // 8 - Kitchen
+    // 45 - Hair Drier
+    // 41 - Shampoo
+    // 5 - AC
+    // 33 - Washer
+    // 34 - Dryer
+    // 27 - Fireplace
+    // 46 - Iron
+    // 47 - Laptop friendly workspace
+    // 58 - Tv
+    // 64 - High chair
+    // 58 - Self check in
+    // 35 - Smoke alarm
+    // 36 - Carbon monoxide alarm
+    // 78 - Private bathroom
+    // 12 - Pets allowed
+    // 9 - Free parking on premises
+    // 25 - Hot Tub
+    amenities, 
+    
+    // Array of room types: {array default: string[]}
+    // Possible values: "Entire home/apt", "Private room", "Hotel room", "Shared room"
+    room_types,
+
+    // Show only instant bookings: {boolean default: false}
+    ib, 
+
+    // Show only superhosts: {boolean default: false}
+    superhost,
+    
+    // Minimum price: {number default: }
+    price_min,
+    
+    // Maximum price: {number default: }
+    price_max,
+    
+    // Minimum bathrooms: {number default: }
+    min_bathrooms,
+    
+    // Minimum bedrooms: {number default: }
+    min_bedrooms,
+    
+    // Minimum beds: {number default: }
+    min_beds,
+}
+ ```
+  - If some values are empty then you will receive an empty array
+```javascript  
+(async () => {
+    try {
+        let response = await airbnb._get_listings_from_search({
+            adults: 2,
+            checkin: '2020-03-07',
+            checkout: '2020-03-12',
+            query: 'Boston, MA, USA',
+            _limit: 50,
+            amenities: [30, 44, 4, 8, 45, 12, 25],
+            price_max: 689,
+            price_min: 25,
+            room_types: ['Private room'],
+        });
+        console.log('Saved Items: ', response);
+    } catch (error) {
+        console.log('Error: ', error);
+    }
+})();
+
 ```
 #### Listing
 ##### _get_listings

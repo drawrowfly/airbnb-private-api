@@ -8,6 +8,7 @@ export interface MainRequest {
     json: boolean;
     proxy?: boolean;
     apply_auth_qs?: boolean;
+    qsStringifyOptions?: boolean;
 }
 
 export interface GetThreads {

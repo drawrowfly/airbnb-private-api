@@ -19,7 +19,7 @@
     "strict": true,
   },
   "include": [
-    "src/**/*.ts"
+    "src/**/*.ts", "src/core/AirBnb.test.js"
   ],
   "exclude": [
     "node_modules",
