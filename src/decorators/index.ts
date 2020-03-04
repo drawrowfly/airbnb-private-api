@@ -1,14 +1,14 @@
+/* eslint-disable */
 export function requireAuth(target: object, key: string, descriptor: any) {
     const original = descriptor.value;
     if (typeof original === 'function') {
         descriptor.value = function(...args: any[]) {
             if (this.authenticated) {
                 return original.apply(this, args);
-            } else {
-                throw new Error(
-                    `Method ${original.name} requires authentication. If you have not authorized before then you need to call _authentication() method. If you already did authorization then call _load_session() method.`,
-                );
             }
+            throw new Error(
+                `Method ${original.name} requires authentication. If you have not authorized before then you need to call _authentication() method. If you already did authorization then call _load_session() method.`,
+            );
         };
     } else {
         return descriptor;
@@ -34,10 +34,8 @@ export function requiredArguments(requiredArgs: string[]) {
                                 break;
                             }
                         }
-                    } else {
-                        if (!this[arg]) {
-                            missingArguments.push(arg);
-                        }
+                    } else if (!this[arg]) {
+                        missingArguments.push(arg);
                     }
                 }
                 if (missingOrArguments.length) {

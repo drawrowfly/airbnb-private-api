@@ -1,3 +1,4 @@
+/* eslint-disable */
 export interface Device {
     id: string;
     screen_size: string;

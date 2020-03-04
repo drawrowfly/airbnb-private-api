@@ -1,3 +1,4 @@
+/* eslint-disable */
 export interface Endpoints {
     authentications: string;
     messaging_syncs: string;

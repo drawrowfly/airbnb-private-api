@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { user_types, reservation_order } from '../constant';
 
 export const random_id = (length, upper) => {

@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { Session } from './Session';
 
 export interface AirBnbClass {

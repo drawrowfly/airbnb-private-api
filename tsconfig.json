@@ -1,27 +1,21 @@
 {
-  "compilerOptions": {
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
-    "lib": [
-      "es7"
-    ], 
-    "module": "commonjs",
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "target": "ES2017",
-    "removeComments": true,
-    "noImplicitAny": false,
-    "moduleResolution": "node",
-    "declaration": true,
-    "noUnusedLocals": true,
-    "outDir": "./lib",
-    "baseUrl": ".",
-    "strict": true,
-  },
-  "include": [
-    "src/**/*.ts", "src/core/AirBnb.test.js"
-  ],
-  "exclude": [
-    "node_modules",
-  ]
+    "compilerOptions": {
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        "lib": ["es7"],
+        "module": "commonjs",
+        "esModuleInterop": true,
+        "allowSyntheticDefaultImports": true,
+        "target": "ES2017",
+        "removeComments": true,
+        "noImplicitAny": false,
+        "moduleResolution": "node",
+        "declaration": true,
+        "noUnusedLocals": true,
+        "outDir": "./lib",
+        "baseUrl": ".",
+        "strict": true
+    },
+    "include": ["src/**/*.ts", "src/core/AirBnb.test.js"],
+    "exclude": ["node_modules"]
 }

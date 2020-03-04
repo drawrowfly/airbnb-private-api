@@ -1,3 +1,4 @@
+/* eslint-disable */
 export interface MainRequest {
     uri: string;
     method: string;
@@ -6,7 +7,6 @@ export interface MainRequest {
     form?: object;
     headers?: object;
     json: boolean;
-    proxy?: boolean;
     apply_auth_qs?: boolean;
     qsStringifyOptions?: boolean;
 }

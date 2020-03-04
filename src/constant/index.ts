@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { Endpoints, UserAgents } from '../types';
 
 export const user_agents: UserAgents[] = [
